@@ -1,0 +1,236 @@
+# Healthcare Memory Assistant
+
+## Overview
+AI-powered multimodal healthcare system using Qdrant vector search for semantic retrieval, persistent memory, and context-aware recommendations.
+
+## Quick Start
+
+### Access the Application
+- **Frontend**: https://civic-tech-vector.preview.emergentagent.com
+- **API Docs**: https://civic-tech-vector.preview.emergentagent.com/api
+
+### Key Features
+1. **Semantic Search** - Natural language search across patient records
+2. **Patient Upload** - Add records with multimodal attachments
+3. **AI Chat** - Conversational interface with GPT-5.2 and memory
+4. **Multimodal Analysis** - Analyze medical images with Gemini 3 Flash
+5. **Recommendations** - Context-aware health guidance using Claude Sonnet 4.5
+
+## Architecture
+
+### Tech Stack
+- **Vector Database**: Qdrant (semantic search & memory)
+- **Backend**: FastAPI + Python
+- **Frontend**: React + shadcn/ui
+- **LLMs**: GPT-5.2, Claude Sonnet 4.5, Gemini 3 Flash
+- **Embeddings**: sentence-transformers
+- **Database**: MongoDB (metadata)
+
+### Qdrant Collections
+1. `patient_records` - Patient medical data with text embeddings
+2. `interaction_history` - Chat memory and conversation context
+3. `health_recommendations` - Cached AI recommendations
+
+## API Endpoints
+
+### Core Endpoints
+- `POST /api/upload-patient-record` - Upload patient data with files
+- `POST /api/search` - Semantic search across records
+- `POST /api/chat` - AI chat with memory and context
+- `POST /api/analyze-multimodal` - Analyze images with Gemini
+- `POST /api/recommendations` - Get health recommendations with Claude
+- `GET /api/stats` - System statistics
+
+## Development
+
+### Local Setup
+```bash
+# Backend
+cd /app/backend
+pip install -r requirements.txt
+
+# Frontend  
+cd /app/frontend
+yarn install
+
+# Restart services
+sudo supervisorctl restart backend frontend
+```
+
+### Environment Variables
+
+**Backend (.env)**
+```
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=test_database
+EMERGENT_LLM_KEY=sk-emergent-e1a55D936839cC4C52
+QDRANT_URL=:memory:
+```
+
+**Frontend (.env)**
+```
+REACT_APP_BACKEND_URL=https://civic-tech-vector.preview.emergentagent.com
+```
+
+## Usage Examples
+
+### 1. Upload Patient Record
+```bash
+curl -X POST "${API_URL}/api/upload-patient-record" \
+  -F "patient_name=John Doe" \
+  -F "notes=Patient with diabetes type 2" \
+  -F "record_type=diagnosis" \
+  -F "file=@xray.png"
+```
+
+### 2. Semantic Search
+```bash
+curl -X POST "${API_URL}/api/search" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "diabetes patients", "limit": 5}'
+```
+
+### 3. AI Chat
+```bash
+curl -X POST "${API_URL}/api/chat" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What treatments are common for diabetes?",
+    "session_id": "session-123"
+  }'
+```
+
+## Societal Impact
+
+### Problem Addressed
+- **Healthcare Access**: Makes medical information searchable and accessible
+- **Patient Safety**: Ensures complete medical history is available
+- **Efficiency**: Reduces time searching for relevant patient data
+- **Informed Decisions**: AI-powered recommendations based on comprehensive context
+
+### Why Qdrant is Critical
+1. **Semantic Understanding**: Finds related concepts, not just keywords
+2. **Multimodal Search**: Unified search across text, images, audio
+3. **Fast Retrieval**: Sub-millisecond search for real-time AI
+4. **Persistent Memory**: Long-term, evolving knowledge storage
+5. **Metadata Filtering**: Precise context retrieval with filters
+
+## Ethical Considerations
+
+### Limitations
+- AI recommendations should not replace medical professionals
+- Simplified image embeddings (production needs CLIP/BiomedCLIP)
+- Limited to top-k context retrieval
+- General-purpose models may miss medical nuances
+
+### Safety Measures
+- Medical disclaimers on all AI outputs
+- Source tracking for recommendations
+- In-memory storage (no persistent patient data)
+- Clear labeling of AI-generated content
+
+### Privacy
+- HIPAA compliance required for production
+- Encryption needed for patient data
+- Access control and audit logs
+- Patient consent required
+
+## Testing
+
+### Backend Tests
+```bash
+cd /app/backend
+pytest tests/
+```
+
+### API Health Check
+```bash
+curl ${API_URL}/api/health
+```
+
+### Check Statistics
+```bash
+curl ${API_URL}/api/stats
+```
+
+## Project Structure
+```
+/app/
+├── backend/
+│   ├── server.py          # Main FastAPI application
+│   ├── requirements.txt   # Python dependencies
+│   └── .env              # Environment variables
+├── frontend/
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── App.css
+│   │   ├── pages/
+│   │   │   └── Dashboard.jsx
+│   │   └── components/
+│   │       ├── SearchComponent.jsx
+│   │       ├── UploadComponent.jsx
+│   │       ├── ChatComponent.jsx
+│   │       ├── AnalyzeComponent.jsx
+│   │       └── RecommendationsComponent.jsx
+│   ├── package.json
+│   └── .env
+├── DOCUMENTATION.md       # Comprehensive documentation
+└── README.md             # This file
+```
+
+## Key Technical Features
+
+### 1. Multimodal Embeddings
+- Text: sentence-transformers (384-dim)
+- Images: Pixel-based (production: CLIP)
+- Named vectors in Qdrant for unified storage
+
+### 2. Memory Architecture
+- Patient records: Persistent knowledge
+- Interaction history: Conversation memory
+- Recommendations: Cached guidance
+
+### 3. LLM Integration
+- GPT-5.2: Chat and text processing
+- Claude Sonnet 4.5: Complex medical reasoning
+- Gemini 3 Flash: Multimodal analysis
+
+### 4. Evidence-Based Outputs
+- All responses reference source records
+- Similarity scores indicate confidence
+- Context tracking for transparency
+
+## Future Enhancements
+
+### Technical
+- CLIP embeddings for true multimodal search
+- Hybrid search (dense + sparse)
+- Audio/video processing
+- Memory decay and reinforcement learning
+
+### Clinical
+- Fine-tune on medical datasets (MIMIC-III, PubMed)
+- Clinical validation and benchmarking
+- HL7/FHIR integration
+- EHR system compatibility
+
+### Production
+- User authentication and RBAC
+- HIPAA compliance
+- Audit logging
+- Encryption at rest and in transit
+
+## Support
+
+For questions or issues:
+- Review `/app/DOCUMENTATION.md` for detailed information
+- Check API endpoints at `/api/docs`
+- Examine logs: `tail -f /var/log/supervisor/backend.*.log`
+
+## License
+
+MIT License - Built for Qdrant Hackathon 2025
+
+---
+
+**Healthcare Memory Assistant** - Addressing societal healthcare challenges through intelligent vector search and multimodal AI.
